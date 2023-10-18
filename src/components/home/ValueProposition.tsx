@@ -1,6 +1,6 @@
 export default function ValueProposition() {
   return (
-    <div className="">
+    <section>
       <div className="relative isolate">
         <div
           aria-hidden="true"
@@ -38,6 +38,6 @@ export default function ValueProposition() {
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 }
