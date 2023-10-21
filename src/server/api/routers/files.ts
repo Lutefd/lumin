@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { db } from "@/server/db";
 import { TRPCError } from "@trpc/server";
+import { utapi } from "@/lib/uploadthing";
 
 export const filesRouter = createTRPCRouter({
   getUserFiles: protectedProcedure.query(async ({ ctx }) => {
@@ -33,6 +34,9 @@ export const filesRouter = createTRPCRouter({
           id: input.id,
         },
       });
+
+      await utapi.deleteFiles(file.key);
+
       return `File with id of ${input.id} was deleted`;
     }),
   getLatest: protectedProcedure.query(({ ctx }) => {
@@ -41,6 +45,22 @@ export const filesRouter = createTRPCRouter({
       where: { createdBy: { id: ctx.session.user.id } },
     });
   }),
+
+  validateFile: protectedProcedure
+    .input(z.object({ key: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { user } = ctx.session;
+      const file = await db.file.findFirst({
+        where: {
+          key: input.key,
+          userId: user.id,
+        },
+      });
+
+      if (!file) throw new TRPCError({ code: "NOT_FOUND" });
+
+      return file;
+    }),
 
   getSingleFile: protectedProcedure
     .input(z.object({ fileID: z.string().min(1) }))
