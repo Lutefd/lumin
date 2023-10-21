@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { TRPCReactProvider } from "@/trpc/react";
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,6 +32,7 @@ export default function RootLayout({
         )}
       >
         <TRPCReactProvider headers={headers()}>
+          <Toaster />
           <Navbar />
           {children}
         </TRPCReactProvider>
